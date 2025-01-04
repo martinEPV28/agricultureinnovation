@@ -1,5 +1,5 @@
-import { Controller, Get, Put } from '@nestjs/common';
-import { AppService } from '../../domain/services/app.service';
+import { Controller, Get, Put, Body, Res } from '@nestjs/common';
+import { AppService } from '../services/app.service';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -8,7 +8,10 @@ import {
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
+  ApiExcludeEndpoint,
 } from '@nestjs/swagger';
+import { transactionDto } from 'src/models/transaction.dto';
+import { ResultDto } from 'src/models/result.dto';
 
 @Controller('/api/transation')
 export class TransationController {
@@ -59,5 +62,15 @@ export class TransationController {
   @Put('update')
   updateData(): string {
     return this.appService.list();
+  }
+
+  @Get('cloud')
+  @ApiExcludeEndpoint()
+  async cloudData(@Res() res, @Body() transaction: transactionDto) {
+    const resServiceDto: ResultDto = await this.appService.save(transaction);
+    return res.status(resServiceDto.status).json({
+      message: resServiceDto.message,
+      data: resServiceDto.data,
+    });
   }
 }
