@@ -1,5 +1,8 @@
 import { Controller, Get, Body, Res, Post } from '@nestjs/common';
-import { AppService } from '../services/app.service';
+import { transactionDto } from 'src/models/dto/transaction.dto';
+import { ResultDto } from 'src/models/dto/result.dto';
+import { searchDto } from 'src/models/dto/search.dto';
+import { TransactionService } from 'src/services/transaction.service';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -8,13 +11,10 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { transactionDto } from 'src/models/dto/transaction.dto';
-import { ResultDto } from 'src/models/dto/result.dto';
-import { searchDto } from 'src/models/dto/search.dto';
-
+@ApiBearerAuth()
 @Controller('/api/v1/')
 export class TransationController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly transationService: TransactionService) {}
 
   @Get('find')
   @ApiHeader({
@@ -23,7 +23,6 @@ export class TransationController {
     description:
       'El token es el asignado por la empresa una vez se tengan acurdos comerciales',
   })
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'Petición completada con éxito' })
   @ApiUnauthorizedResponse({ description: 'El token-api es inválido' })
   @ApiConflictResponse({
@@ -33,7 +32,7 @@ export class TransationController {
     description: 'Se generó un error en el servidor',
   })
   async findData(@Res() res, @Body() search: searchDto) {
-    const resServiceDto: ResultDto = await this.appService.find(search);
+    const resServiceDto: ResultDto = await this.transationService.find(search);
     return res.status(resServiceDto.status).json({
       message: resServiceDto.message,
       data: resServiceDto.data,
@@ -47,7 +46,6 @@ export class TransationController {
     description:
       'El token es el asignado por la empresa una vez se tengan acurdos comerciales',
   })
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'Petición completada con éxito' })
   @ApiUnauthorizedResponse({ description: 'El token-api es inválido' })
   @ApiConflictResponse({
@@ -56,8 +54,8 @@ export class TransationController {
   @ApiInternalServerErrorResponse({
     description: 'Se generó un error en el servidor',
   })
-  async listData(@Res() res, @Body() transaction: transactionDto) {
-    const resServiceDto: ResultDto = await this.appService.list(transaction);
+  async listData(@Res() res) {
+    const resServiceDto: ResultDto = await this.transationService.findAll();
     return res.status(resServiceDto.status).json({
       message: resServiceDto.message,
       data: resServiceDto.data,
@@ -81,7 +79,9 @@ export class TransationController {
     description: 'Se generó un error en el servidor',
   })
   async cloudData(@Res() res, @Body() transaction: transactionDto) {
-    const resServiceDto: ResultDto = await this.appService.save(transaction);
+    const resServiceDto: ResultDto =
+      await this.transationService.create(transaction);
+
     return res.status(resServiceDto.status).json({
       message: resServiceDto.message,
       data: resServiceDto.data,

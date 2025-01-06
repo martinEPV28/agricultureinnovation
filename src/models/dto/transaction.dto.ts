@@ -44,4 +44,7 @@ export class transactionDto {
     message: `El campo tipo_trasaccion no puede ser nullo o vacio`
   })
   tipo_trasaccion: number;
+
+  id_trasaccion: string;
+  url_imagen: string;
 }

@@ -1,11 +1,26 @@
 import { Module } from '@nestjs/common';
-import { TransationController } from '../controllers/transaction.controller';
-import { AppService } from '../services/app.service';
-import { ConfigModule } from '@nestjs/config';
-
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { TransationModule } from './transaction.module';
+import { join } from 'path';
 @Module({
-  imports: [ConfigModule],
-  controllers: [TransationController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot(),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) =>({
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DATABASE'),
+        //entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
+        entities: [join(process.cwd(), 'dist/**/*.entity{.ts,.js}')],
+      }),
+    }),
+    TransationModule
+  ]
 })
 export class AppModule {}
