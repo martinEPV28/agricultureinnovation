@@ -1,9 +1,9 @@
-import { Injectable, HttpStatus, Inject } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { ResultDto } from 'src/models/dto/result.dto';
 import { searchDto } from 'src/models/dto/search.dto';
 import { transactionDto } from 'src/models/dto/transaction.dto';
-import { TraderRepository } from 'src/models/repository/traderRepository';
-import { TransactionRepository } from 'src/models/repository/transationRepository';
+import { TraderRepository } from 'src/modules/repository/traderRepository';
+import { TransactionRepository } from 'src/modules/repository/transationRepository';
 
 @Injectable()
 export class TransactionService {
@@ -14,11 +14,14 @@ export class TransactionService {
   private readonly storage: Storage;
 
   async create(createTransaction: transactionDto): Promise<ResultDto> {
-    let result,id_trasaccion: any = '';
+    let result,
+      id_trasaccion: any = '';
     let message: string;
     let data: any = [];
     const resServiceDto: ResultDto = new ResultDto();
-    result = await this.traderRepository.findOne(createTransaction.vendedor);
+    result = await this.traderRepository.findOneTrader(
+      createTransaction.vendedor,
+    );
     if (result) {
       const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
       for (let i = 0; i < 12; i++) {

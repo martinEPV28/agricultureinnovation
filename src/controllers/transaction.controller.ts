@@ -12,7 +12,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 @ApiBearerAuth()
-@Controller('/api/v1/')
+@Controller('/api/v1/trasation/')
 export class TransationController {
   constructor(private readonly transationService: TransactionService) {}
 

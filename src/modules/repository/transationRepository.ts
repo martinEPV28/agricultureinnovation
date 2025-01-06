@@ -1,8 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Transacciones } from '../entity/transaction.entity';
+import { Transacciones } from '../../models/entity/transaction.entity';
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { transactionDto } from '../dto/transaction.dto';
+import { transactionDto } from '../../models/dto/transaction.dto';
 
 @Injectable()
 export class TransactionRepository {

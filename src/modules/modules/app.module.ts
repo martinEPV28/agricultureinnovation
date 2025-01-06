@@ -3,13 +3,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransationModule } from './transaction.module';
 import { join } from 'path';
+import { TraderModule } from './trader.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>({
+      useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DB_HOST'),
         port: configService.get('DB_PORT'),
@@ -20,7 +21,8 @@ import { join } from 'path';
         entities: [join(process.cwd(), 'dist/**/*.entity{.ts,.js}')],
       }),
     }),
-    TransationModule
-  ]
+    TransationModule,
+    TraderModule,
+  ],
 })
 export class AppModule {}
