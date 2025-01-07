@@ -30,6 +30,6 @@ import { JwtStrategy } from 'src/utils/jwt.strategy';
     TransactionRepository,
     TraderRepository,
     JwtStrategy,
-  S],
+    ConfigService],
 })
 export class TraderModule {}

@@ -145,7 +145,11 @@ export class TraderService {
       const payload = { username: trader.login, sub: trader.id };
       const access_token = this.jwtService.sign(payload);
       resServiceDto.status = HttpStatus.OK;
-      resServiceDto.data = { access_token: access_token, login: trader.login };
+      resServiceDto.data = {
+        access_token: access_token,
+        login: trader.login,
+        id_vendedor: trader.id_vendedor,
+      };
       resServiceDto.message = `Peticion Exitosa `;
     } else {
       resServiceDto.status = HttpStatus.UNAUTHORIZED;

@@ -18,7 +18,7 @@ export class TransationController {
   constructor(private readonly transationService: TransactionService) {}
 
   @Get('find')
-  @UseGuards(AuthGuard('jwt'));
+  @UseGuards(AuthGuard('jwt'))
   @ApiHeader({
     name: 'token-api',
     required: true,
