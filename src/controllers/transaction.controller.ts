@@ -6,27 +6,20 @@ import { TransactionService } from 'src/services/transaction.service';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
-  ApiHeader,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+@UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth()
 @Controller('/api/v1/trasaction/')
 export class TransationController {
   constructor(private readonly transationService: TransactionService) {}
 
   @Get('find')
-  @UseGuards(AuthGuard('jwt'))
-  @ApiHeader({
-    name: 'token-api',
-    required: true,
-    description:
-      'El token es el asignado por la empresa una vez se tengan acurdos comerciales',
-  })
   @ApiOkResponse({ description: 'Petición completada con éxito' })
-  @ApiUnauthorizedResponse({ description: 'El token-api es inválido' })
+  @ApiUnauthorizedResponse({ description: 'El token es inválido' })
   @ApiConflictResponse({
     description: 'Conflicto de parámetros enviados por el cliente',
   })
@@ -41,15 +34,9 @@ export class TransationController {
     });
   }
 
-  @Get('list')
-  @ApiHeader({
-    name: 'token-api',
-    required: true,
-    description:
-      'El token es el asignado por la empresa una vez se tengan acurdos comerciales',
-  })
+  @Get('list') 
   @ApiOkResponse({ description: 'Petición completada con éxito' })
-  @ApiUnauthorizedResponse({ description: 'El token-api es inválido' })
+  @ApiUnauthorizedResponse({ description: 'El token es inválido' })
   @ApiConflictResponse({
     description: 'Conflicto de parámetros enviados por el cliente',
   })
@@ -65,22 +52,15 @@ export class TransationController {
   }
 
   @Post('save')
-  @ApiHeader({
-    name: 'token-api',
-    required: true,
-    description:
-      'El token es el asignado por la empresa una vez se tengan acurdos comerciales',
-  })
-  @ApiBearerAuth()
   @ApiOkResponse({ description: 'Petición completada con éxito' })
-  @ApiUnauthorizedResponse({ description: 'El token-api es inválido' })
+  @ApiUnauthorizedResponse({ description: 'El token es inválido' })
   @ApiConflictResponse({
     description: 'Conflicto de parámetros enviados por el cliente',
   })
   @ApiInternalServerErrorResponse({
     description: 'Se generó un error en el servidor',
   })
-  async cloudData(@Res() res, @Body() transaction: transactionDto) {
+  async saveData(@Res() res, @Body() transaction: transactionDto) {
     const resServiceDto: ResultDto =
       await this.transationService.create(transaction);
 

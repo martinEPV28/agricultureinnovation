@@ -58,7 +58,7 @@ export class TransactionService {
 
   async findAll() {
     const resServiceDto: ResultDto = new ResultDto();
-    resServiceDto.data = this.transationRepository.find();
+    resServiceDto.data = await this.transationRepository.find();
     resServiceDto.status = HttpStatus.OK;
     resServiceDto.message = `Peticion Exitosa `;
     return resServiceDto;

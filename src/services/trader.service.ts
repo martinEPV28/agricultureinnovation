@@ -7,7 +7,6 @@ import { TransactionRepository } from 'src/modules/repository/transationReposito
 import { format } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import * as generator from 'generate-password-ts';
-import { traderLoginDto } from 'src/models/dto/traderLogin.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -18,15 +17,6 @@ export class TraderService {
     private readonly jwtService: JwtService,
   ) {}
 
-  /*constructor(private readonly jwtService: JwtService) {}
-
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
-
-    return {
-      access_token: this.jwtService.sign(payload), // El tiempo de expiración se aplica automáticamente
-    };
-  }*/
   async create(createTraderDto: traderDto): Promise<ResultDto> {
     let result,
       login,
@@ -115,7 +105,7 @@ export class TraderService {
 
   async findAll() {
     const resServiceDto: ResultDto = new ResultDto();
-    resServiceDto.data = this.transationRepository.find();
+    resServiceDto.data = await this.transationRepository.find();
     resServiceDto.status = HttpStatus.OK;
     resServiceDto.message = `Peticion Exitosa `;
     return resServiceDto;
@@ -157,12 +147,5 @@ export class TraderService {
       resServiceDto.message = `usuario o contraseña incorrecta`;
     }
     return resServiceDto;
-  }
-  update(id: number, updateTraderDto: traderDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
   }
 }
