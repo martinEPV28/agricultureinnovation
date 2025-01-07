@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Res, Post } from '@nestjs/common';
+import { Controller, Get, Body, Res, Post, UseGuards } from '@nestjs/common';
 import { transactionDto } from 'src/models/dto/transaction.dto';
 import { ResultDto } from 'src/models/dto/result.dto';
 import { searchDto } from 'src/models/dto/search.dto';
@@ -11,12 +11,14 @@ import {
   ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 @ApiBearerAuth()
-@Controller('/api/v1/trasation/')
+@Controller('/api/v1/trasaction/')
 export class TransationController {
   constructor(private readonly transationService: TransactionService) {}
 
   @Get('find')
+  @UseGuards(AuthGuard('jwt'));
   @ApiHeader({
     name: 'token-api',
     required: true,

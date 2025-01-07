@@ -33,22 +33,18 @@ export class TraderRepository {
     });
   }
 
-  async create(createTraderDto: traderDto) {
-    console.log('consola');
-    return await this.traderRepository.save(
-      this.traderRepository.create(createTraderDto),
-    );
-  }
-
-  async find2() {
-    return await this.traderRepository.find();
-  }
-
-  async findOne2(id_vendedor: number) {
+  async findOneRazonSocial(razon_social: string) {
     return await this.traderRepository.findOne({
-      where: { id_vendedor },
+      where: { razon_social },
     });
   }
+
+  async findByLogin(login: string) {
+    return await this.traderRepository.findOne({
+      where: { login },
+    });
+  }
+  
 
   async update2(id: number, updateTraderDto: traderDto) {
     return this.traderRepository.update(+id, updateTraderDto);

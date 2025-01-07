@@ -15,40 +15,44 @@ export class TransactionService {
 
   async create(createTransaction: transactionDto): Promise<ResultDto> {
     let result,
-      id_trasaccion: any = '';
-    let message: string;
-    let data: any = [];
+      id_trasaccion,
+      dataRespons,
+      statusRepons,
+      messageRespons : any = '';
     const resServiceDto: ResultDto = new ResultDto();
     result = await this.traderRepository.findOneTrader(
       createTransaction.vendedor,
     );
     if (result) {
-      const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      id_trasaccion ='';
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       for (let i = 0; i < 12; i++) {
         const randomInd = Math.floor(Math.random() * characters.length);
         id_trasaccion += characters.charAt(randomInd);
       }
-      data = { transation: id_trasaccion };
+      dataRespons = { transation: id_trasaccion };
 
       createTransaction.id_trasaccion = id_trasaccion;
       createTransaction.url_imagen = createTransaction.imagen_recibida;
       result = await this.transationRepository.save(createTransaction);
 
       if (result) {
-        message = `Peticion Exitosa `;
-        resServiceDto.data = data;
-        resServiceDto.status = HttpStatus.OK;
+        messageRespons = `Peticion Exitosa `;
+        statusRepons = HttpStatus.OK;
       } else {
-        message = `Error al ingresar la informacion`;
-        resServiceDto.data = result;
-        resServiceDto.status = HttpStatus.CONFLICT;
+        messageRespons = `Error al ingresar la informacion`;
+        dataRespons = result;
+        statusRepons = HttpStatus.CONFLICT;
       }
     } else {
-      message = `Id Vendedor Incorrecto`;
-      resServiceDto.status = HttpStatus.NOT_FOUND;
+      messageRespons = `Id Vendedor Incorrecto`;
+      statusRepons = HttpStatus.NOT_FOUND;
+      dataRespons =`Error`;
     }
 
-    resServiceDto.message = message;
+    resServiceDto.data = dataRespons;
+    resServiceDto.status = statusRepons;
+    resServiceDto.message = messageRespons;
     return resServiceDto;
   }
 

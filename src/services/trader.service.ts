@@ -1,16 +1,21 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import * as generator from 'generate-password-ts';
 import { ResultDto } from 'src/models/dto/result.dto';
 import { searchDto } from 'src/models/dto/search.dto';
 import { traderDto } from 'src/models/dto/trader.dto';
 import { TraderRepository } from 'src/modules/repository/traderRepository';
 import { TransactionRepository } from 'src/modules/repository/transationRepository';
+import { format } from 'date-fns';
+import * as bcrypt from 'bcrypt';
+import * as generator from 'generate-password-ts';
+import { traderLoginDto } from 'src/models/dto/traderLogin.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class TraderService {
   constructor(
     private readonly transationRepository: TransactionRepository,
     private readonly traderRepository: TraderRepository,
+    private readonly jwtService: JwtService,
   ) {}
 
   /*constructor(private readonly jwtService: JwtService) {}
@@ -25,16 +30,19 @@ export class TraderService {
   async create(createTraderDto: traderDto): Promise<ResultDto> {
     let result,
       login,
+      dataRespons,
+      statusRepons,
+      messageRespons,
+      i,
       id_vendedor: any = '';
-    let message: string;
     const resServiceDto: ResultDto = new ResultDto();
-    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const characters = '0123456789';
     result = await this.traderRepository.findOneIdentiti(
       createTraderDto.identificacion,
     );
     if (!result) {
-      result = await this.traderRepository.findOneIdentiti(
-        createTraderDto.identificacion,
+      result = await this.traderRepository.findOneRazonSocial(
+        createTraderDto.razon_social,
       );
       if (!result) {
         const password = generator.generate({
@@ -49,40 +57,59 @@ export class TraderService {
           .replace(/ /g, '')
           .toLowerCase()
           .substring(0, 4);
-        for (let i = 0; i < 4; i++) {
+        Array.from({ length: 4 }).forEach(() => {
           const randomInd = Math.floor(Math.random() * characters.length);
           login += characters.charAt(randomInd);
-        }
+        });
 
-        for (let i = 0; i < 12; i++) {
+        Array.from({ length: 6 }).forEach((_, i) => {
           const randomInd = Math.floor(Math.random() * characters.length);
           id_vendedor += characters.charAt(randomInd);
-        }
 
-        createTraderDto.password = password;
+          if (i === 3) {
+            const currentDate = new Date();
+            const formattedDate = format(currentDate, 'yyyyddMM');
+            id_vendedor += formattedDate;
+          }
+        });
+
+        createTraderDto.password = await bcrypt.hash(password, 10);
         createTraderDto.login = login;
         createTraderDto.id_vendedor = id_vendedor;
+        dataRespons = {
+          razon_social: createTraderDto.razon_social,
+          identificacion: createTraderDto.identificacion,
+          nombre: createTraderDto.nombre,
+          apellido: createTraderDto.apellido,
+          password: password,
+          login: createTraderDto.login,
+          id_vendedor: createTraderDto.id_vendedor,
+        };
+
         result = await this.traderRepository.save(createTraderDto);
 
         if (result) {
-          message = `Peticion Exitosa `;
-          resServiceDto.data = result;
-          resServiceDto.status = HttpStatus.OK;
+          messageRespons = `Peticion Exitosa `;
+          statusRepons = HttpStatus.OK;
         } else {
-          message = `Error al ingresar la informacion`;
-          resServiceDto.data = createTraderDto;
-          resServiceDto.status = HttpStatus.CONFLICT;
+          messageRespons = `Error al ingresar la informacion`;
+          dataRespons = result;
+          statusRepons = HttpStatus.CONFLICT;
         }
       } else {
-        message = `La Razon social no existe`;
-        resServiceDto.status = HttpStatus.NOT_FOUND;
+        messageRespons = `La Razon social ya existe`;
+        statusRepons = HttpStatus.NOT_FOUND;
+        dataRespons = `Error`;
       }
     } else {
-      message = `EL vendendo ya existe`;
-      resServiceDto.status = HttpStatus.NOT_FOUND;
+      messageRespons = `EL vendendor ya existe`;
+      statusRepons = HttpStatus.NOT_FOUND;
+      dataRespons = `Error`;
     }
 
-    resServiceDto.message = message;
+    resServiceDto.data = dataRespons;
+    resServiceDto.status = statusRepons;
+    resServiceDto.message = messageRespons;
     return resServiceDto;
   }
 
@@ -111,6 +138,22 @@ export class TraderService {
     return resServiceDto;
   }
 
+  async validateUser(login: string, password: string): Promise<ResultDto> {
+    const resServiceDto: ResultDto = new ResultDto();
+    const trader = await this.traderRepository.findByLogin(login);
+    if (trader && (await bcrypt.compare(password, trader.password))) {
+      const payload = { username: trader.login, sub: trader.id };
+      const access_token = this.jwtService.sign(payload);
+      resServiceDto.status = HttpStatus.OK;
+      resServiceDto.data = { access_token: access_token, login: trader.login };
+      resServiceDto.message = `Peticion Exitosa `;
+    } else {
+      resServiceDto.status = HttpStatus.UNAUTHORIZED;
+      resServiceDto.data = `Error al autenticarse`;
+      resServiceDto.message = `usuario o contraseña incorrecta`;
+    }
+    return resServiceDto;
+  }
   update(id: number, updateTraderDto: traderDto) {
     return `This action updates a #${id} auth`;
   }
