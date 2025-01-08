@@ -1,9 +1,13 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransationModule } from './transaction.module';
 import { join } from 'path';
 import { TraderModule } from './trader.module';
+import * as cookieParser from 'cookie-parser';
+import { CsrfMiddleware } from 'src/middlewares/csrf.middleware';
+import { ThrottlerModule } from '@nestjs/throttler';
+
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -21,8 +25,20 @@ import { TraderModule } from './trader.module';
         entities: [join(process.cwd(), 'dist/**/*.entity{.ts,.js}')],
       }),
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     TransationModule,
     TraderModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(cookieParser(), CsrfMiddleware)
+      .forRoutes('/api/v1/trader/list'); // Puedes limitar las rutas donde aplicar CSRF
+  }
+}

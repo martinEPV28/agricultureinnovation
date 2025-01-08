@@ -1,14 +1,14 @@
-import { Controller, Post, Body, Res, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Controller, Post, Body, Res } from '@nestjs/common';
+import { traderDto } from '../models/dto/trader.dto';
+import { ResultDto } from '../models/dto/result.dto';
 import {
   ApiConflictResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
 } from '@nestjs/swagger';
-import { ResultDto } from 'src/models/dto/result.dto';
-import { traderDto } from 'src/models/dto/trader.dto';
-import { traderLoginDto } from 'src/models/dto/traderLogin.dto';
-import { TraderService } from 'src/services/trader.service';
+
+import { traderLoginDto } from '../models/dto/traderLogin.dto';
+import { TraderService } from '../services/trader.service';
 
 @Controller('/api/v1/trader/')
 export class TraderController {
@@ -31,7 +31,6 @@ export class TraderController {
       data: resServiceDto.data,
     });
   }
-
   @Post('login')
   async login(@Res() res, @Body() loginTraderDto: traderLoginDto) {
     const resServiceDto: ResultDto = await this.traderService.validateUser(

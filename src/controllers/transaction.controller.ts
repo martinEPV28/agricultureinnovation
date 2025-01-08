@@ -1,8 +1,8 @@
 import { Controller, Get, Body, Res, Post, UseGuards } from '@nestjs/common';
-import { transactionDto } from 'src/models/dto/transaction.dto';
-import { ResultDto } from 'src/models/dto/result.dto';
-import { searchDto } from 'src/models/dto/search.dto';
-import { TransactionService } from 'src/services/transaction.service';
+import { transactionDto } from '../models/dto/transaction.dto';
+import { ResultDto } from '../models/dto/result.dto';
+import { searchDto } from '../models/dto/search.dto';
+import { TransactionService } from '../services/transaction.service';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -34,7 +34,7 @@ export class TransationController {
     });
   }
 
-  @Get('list') 
+  @Get('list')
   @ApiOkResponse({ description: 'Petición completada con éxito' })
   @ApiUnauthorizedResponse({ description: 'El token es inválido' })
   @ApiConflictResponse({

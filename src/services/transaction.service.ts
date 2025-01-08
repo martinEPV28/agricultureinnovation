@@ -1,9 +1,9 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
-import { ResultDto } from 'src/models/dto/result.dto';
-import { searchDto } from 'src/models/dto/search.dto';
-import { transactionDto } from 'src/models/dto/transaction.dto';
-import { TraderRepository } from 'src/modules/repository/traderRepository';
-import { TransactionRepository } from 'src/modules/repository/transationRepository';
+import { ResultDto } from '../models/dto/result.dto';
+import { searchDto } from '../models/dto/search.dto';
+import { transactionDto } from '../models/dto/transaction.dto';
+import { TraderRepository } from '../modules/repository/traderRepository';
+import { TransactionRepository } from '../modules/repository/transationRepository';
 
 @Injectable()
 export class TransactionService {

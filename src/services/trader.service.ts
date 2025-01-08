@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { ResultDto } from 'src/models/dto/result.dto';
-import { searchDto } from 'src/models/dto/search.dto';
-import { traderDto } from 'src/models/dto/trader.dto';
-import { TraderRepository } from 'src/modules/repository/traderRepository';
-import { TransactionRepository } from 'src/modules/repository/transationRepository';
+import { ResultDto } from '../models/dto/result.dto';
+import { searchDto } from '../models/dto/search.dto';
+import { traderDto } from '../models/dto/trader.dto';
+import { TraderRepository } from '../modules/repository/traderRepository';
+import { TransactionRepository } from '../modules/repository/transationRepository';
 import { format } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import * as generator from 'generate-password-ts';
