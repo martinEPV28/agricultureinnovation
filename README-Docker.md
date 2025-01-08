@@ -29,7 +29,7 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 3200
+EXPOSE 8080
 
 CMD [ "npm", "run", "start" ]
 ```
@@ -39,7 +39,7 @@ Ejecutar este comando
 ```bash
 docker build -t app-agriculture:v1 .
 docker images
-docker run -p 5000:3200 app-agriculture:v1
+docker run -p 5000:8080 app-agriculture:v2
 ```
 
 ## Subir Imagen google cloud
@@ -49,8 +49,8 @@ gcloud init
 ```
 iniciamos la intacia que tenemos configurado desde cloud
 ```bash
-docker tag app-agriculture:v1 gcr.io/qualified-smile-445322-g8/app-agriculture:v1
+docker tag app-agriculture:v3 gcr.io/qualified-smile-445322-g8/app-agriculture:v3
 gcloud auth configure-docker 
-docker push gcr.io/qualified-smile-445322-g8/app-agriculture:v1
+docker push gcr.io/qualified-smile-445322-g8/app-agriculture:v3
 ```
 
